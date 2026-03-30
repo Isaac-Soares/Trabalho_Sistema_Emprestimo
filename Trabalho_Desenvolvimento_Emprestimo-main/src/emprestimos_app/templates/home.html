@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div style="text-align: center; margin-top: 40px;">
+        <h1>Bem-vindo ao Sistema de Empréstimos!</h1>
+        <p>Escolha uma das opções abaixo para começar:</p>
+        
+        <br>
+        
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+            <a href="/usuarios" style="padding: 15px 25px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">👤 Gerenciar Usuários</a>
+            
+            <a href="/itens" style="padding: 15px 25px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">📦 Gerenciar Itens</a>
+            
+            <a href="/emprestimos" style="padding: 15px 25px; background-color: #ffc107; color: black; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">🔄 Empréstimos e Devoluções</a>
+        </div>
+
+        <br><br><br>
+        <hr style="width: 60%; margin: auto;">
+        <br>
+
+        <h3>Sobre o Sistema:</h3>
+        <p>Desenvolvido para gerenciar a retirada e devolução de itens com segurança.</p>
+        <p style="color: #555; font-size: 14px;"><strong>Regra Ativa:</strong> Um item não pode ser emprestado se já estiver em uso.</p>
+    </div>
+{% endblock %}

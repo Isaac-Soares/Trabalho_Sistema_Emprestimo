@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Gerenciar Itens</h2>
+
+    <fieldset>
+        <legend>Cadastrar Novo Item</legend>
+        <form action="/itens/adicionar" method="POST">
+            <label>Nome do Item:</label>
+            <input type="text" name="nome" required placeholder="Ex: Livro de Python, Notebook...">
+            
+            <label>Categoria:</label>
+            <select name="categoria_id" required>
+                {% for cat in categorias %}
+                    <option value="{{ cat.id }}">{{ cat.nome }}</option>
+                {% else %}
+                    <option value="1">Geral</option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit">Cadastrar Item</button>
+        </form>
+    </fieldset>
+
+    <br>
+
+    <h3>Estoque de Itens</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome do Item</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in lista_itens %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.nome }}</td>
+                <td>
+                    {% if item.disponivel %}
+                        <span style="color: green; font-weight: bold;">Disponível</span>
+                    {% else %}
+                        <span style="color: red; font-weight: bold;">Emprestado</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">Nenhum item cadastrado no estoque.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

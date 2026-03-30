@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Gerenciar Usuários</h2>
+
+    <fieldset>
+        <legend>Novo Usuário</legend>
+        <form action="/usuarios/adicionar" method="POST">
+            <label>Nome:</label>
+            <input type="text" name="nome" required>
+            
+            <label>E-mail:</label>
+            <input type="email" name="email" required>
+            
+            <button type="submit">Cadastrar</button>
+        </form>
+    </fieldset>
+
+    <br>
+
+    <h3>Usuários Cadastrados</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in lista_usuarios %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.nome }}</td>
+                <td>{{ u.email }}</td>
+                <td>
+                    <form action="/usuarios/deletar/{{ u.id }}" method="POST" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Tem certeza que deseja remover?')">Remover</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">Nenhum usuário cadastrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

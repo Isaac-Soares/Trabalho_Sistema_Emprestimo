@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Empréstimos e Devoluções</h2>
+
+    <fieldset>
+        <legend>Registrar Novo Empréstimo</legend>
+        <form action="/emprestimos/novo" method="POST">
+            
+            <label>Selecione o Usuário:</label>
+            <select name="usuario_id" required>
+                <option value="">-- Escolha --</option>
+                {% for u in usuarios %}
+                    <option value="{{ u.id }}">{{ u.nome }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Selecione o Item (Apenas Disponíveis):</label>
+            <select name="item_id" required>
+                <option value="">-- Escolha --</option>
+                {% for item in itens_disponiveis %}
+                    <option value="{{ item.id }}">{{ item.nome }}</option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit">Emprestar</button>
+        </form>
+    </fieldset>
+
+    <br>
+
+    <h3>Itens Atualmente Emprestados</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Empréstimo</th>
+                <th>Usuário</th>
+                <th>Item</th>
+                <th>Data do Empréstimo</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for emp in emprestimos_ativos %}
+            <tr>
+                <td>{{ emp.id }}</td>
+                <td>{{ emp.usuario.nome }}</td>
+                <td>{{ emp.item.nome }}</td>
+                <td>{{ emp.data_emprestimo.strftime('%d/%m/%Y') }}</td>
+                <td>
+                    <form action="/emprestimos/devolver/{{ emp.id }}" method="POST" style="display:inline;">
+                        <button type="submit">Registrar Devolução</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Nenhum item emprestado no momento.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
