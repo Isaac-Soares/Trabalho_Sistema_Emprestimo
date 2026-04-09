@@ -1,49 +1,65 @@
-from flask import Blueprint, request, jsonify
-from src.emprestimos_app.models import db, Item
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from ... import db
+from ...models import Item, Categoria
 
 itens_bp = Blueprint('itens', __name__, url_prefix='/itens')
 
-@itens_bp.route('', methods=['POST'])
-def criar():
-    data = request.json
-    item = Item(
-        nome=data['nome'],
-        descricao=data.get('descricao'),
-        categoria_id=data['categoria_id']
-    )
-    db.session.add(item)
-    db.session.commit()
-    return {"msg": "Item criado"}
 
 @itens_bp.route('', methods=['GET'])
-def listar():
+def listar_itens():
     itens = Item.query.all()
-    return jsonify([
-        {
-            "id": i.id,
-            "nome": i.nome,
-            "disponivel": i.disponivel
-        } for i in itens
-    ])
+    categorias = Categoria.query.all()
 
-@itens_bp.route('/<int:id>', methods=['PUT'])
-def atualizar(id):
+    return render_template(
+        'itens/itens.html',
+        itens=itens,
+        categorias=categorias
+    )
+
+
+@itens_bp.route('/novo', methods=['POST'])
+def criar_item():
+    nome = request.form['nome']
+    descricao = request.form['descricao']
+    categoria_id = request.form['categoria_id']
+
+    item = Item(
+        nome=nome,
+        descricao=descricao,
+        categoria_id=categoria_id,
+        disponivel=True
+    )
+
+    db.session.add(item)
+    db.session.commit()
+
+    flash('Item criado com sucesso!', 'sucesso')
+    return redirect(url_for('itens.listar_itens'))
+
+
+@itens_bp.route('/editar/<int:id>', methods=['POST'])
+def atualizar_item(id):
     item = Item.query.get_or_404(id)
-    data = request.json
 
-    item.nome = data.get('nome', item.nome)
-    item.descricao = data.get('descricao', item.descricao)
+    item.nome = request.form['nome']
+    item.descricao = request.form['descricao']
+    item.categoria_id = request.form['categoria_id']
 
     db.session.commit()
-    return {"msg": "Atualizado"}
+    flash('Item atualizado com sucesso!', 'sucesso')
+    return redirect(url_for('itens.listar_itens'))
 
-@itens_bp.route('/<int:id>', methods=['DELETE'])
-def deletar(id):
+
+@itens_bp.route('/deletar/<int:id>', methods=['POST'])
+def deletar_item(id):
     item = Item.query.get_or_404(id)
 
     if not item.disponivel:
-        return {"erro": "Item emprestado"}, 400
+        flash('Não é possível excluir: item está emprestado.', 'erro')
+        return redirect(url_for('itens.listar_itens'))
 
     db.session.delete(item)
     db.session.commit()
-    return {"msg": "Deletado"}
+
+    flash('Item deletado com sucesso!', 'sucesso')
+    return redirect(url_for('itens.listar_itens'))

@@ -1,43 +1,55 @@
-from flask import Blueprint, request, jsonify
-from src.emprestimos_app.models import db,  Usuario
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from ... import db
+from ...models import Usuario
 
 usuarios_bp = Blueprint('usuarios', __name__, url_prefix='/usuarios')
 
-@usuarios_bp.route('', methods=['POST'])
-def criar_usuario():
-    data = request.json
-    if Usuario.query.filter_by(email=data['email']).first():
-        return {"erro": "Email já cadastrado"}, 400
-
-    usuario = Usuario(nome=data['nome'], email=data['email'])
-    db.session.add(usuario)
-    db.session.commit()
-    return {"msg": "Usuário criado"}
 
 @usuarios_bp.route('', methods=['GET'])
 def listar_usuarios():
     usuarios = Usuario.query.all()
-    return jsonify([{"id": u.id, "nome": u.nome, "email": u.email} for u in usuarios])
+    return render_template('usuarios/usuarios.html', usuarios=usuarios)
 
-@usuarios_bp.route('/<int:id>', methods=['PUT'])
+
+@usuarios_bp.route('/novo', methods=['POST'])
+def criar_usuario():
+    nome = request.form['nome']
+    email = request.form['email']
+
+    if Usuario.query.filter_by(email=email).first():
+        flash('Email já cadastrado!', 'erro')
+        return redirect(url_for('usuarios.listar_usuarios'))
+
+    usuario = Usuario(nome=nome, email=email)
+    db.session.add(usuario)
+    db.session.commit()
+
+    flash('Usuário criado com sucesso!', 'sucesso')
+    return redirect(url_for('usuarios.listar_usuarios'))
+
+
+@usuarios_bp.route('/editar/<int:id>', methods=['POST'])
 def atualizar_usuario(id):
     usuario = Usuario.query.get_or_404(id)
-    data = request.json
 
-    usuario.nome = data.get('nome', usuario.nome)
-    usuario.email = data.get('email', usuario.email)
+    usuario.nome = request.form['nome']
+    usuario.email = request.form['email']
 
     db.session.commit()
-    return {"msg": "Atualizado"}
+    flash('Usuário atualizado com sucesso!', 'sucesso')
+    return redirect(url_for('usuarios.listar_usuarios'))
 
-@usuarios_bp.route('/<int:id>', methods=['DELETE'])
+
+@usuarios_bp.route('/deletar/<int:id>', methods=['POST'])
 def deletar_usuario(id):
     usuario = Usuario.query.get_or_404(id)
 
     if usuario.emprestimos:
-        return {"erro": "Usuário possui empréstimos"}, 400
+        flash('Usuário possui empréstimos e não pode ser excluído.', 'erro')
+        return redirect(url_for('usuarios.listar_usuarios'))
 
     db.session.delete(usuario)
     db.session.commit()
-    return {"msg": "Deletado"}
+
+    flash('Usuário deletado com sucesso!', 'sucesso')
+    return redirect(url_for('usuarios.listar_usuarios'))

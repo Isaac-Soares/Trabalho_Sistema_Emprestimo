@@ -5,9 +5,12 @@
 
     <fieldset>
         <legend>Cadastrar Novo Item</legend>
-        <form action="/itens/adicionar" method="POST">
+        <form action="{{ url_for('itens.criar_item') }}" method="POST">
             <label>Nome do Item:</label>
             <input type="text" name="nome" required placeholder="Ex: Livro de Python, Notebook...">
+            
+            <label>Descrição:</label>
+            <input type="text" name="descricao" placeholder="Descrição do item">
             
             <label>Categoria:</label>
             <select name="categoria_id" required>
@@ -34,7 +37,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for item in lista_itens %}
+            {% for item in itens %}
             <tr>
                 <td>{{ item.id }}</td>
                 <td>{{ item.nome }}</td>

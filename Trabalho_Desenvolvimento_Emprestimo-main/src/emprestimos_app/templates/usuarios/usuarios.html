@@ -5,7 +5,7 @@
 
     <fieldset>
         <legend>Novo Usuário</legend>
-        <form action="/usuarios/adicionar" method="POST">
+        <form action="{{ url_for('usuarios.criar_usuario') }}" method="POST">
             <label>Nome:</label>
             <input type="text" name="nome" required>
             
@@ -29,13 +29,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for u in lista_usuarios %}
+            {% for u in usuarios %}
             <tr>
                 <td>{{ u.id }}</td>
                 <td>{{ u.nome }}</td>
                 <td>{{ u.email }}</td>
                 <td>
-                    <form action="/usuarios/deletar/{{ u.id }}" method="POST" style="display:inline;">
+                    <form action="{{ url_for('usuarios.deletar_usuario', id=u.id) }}" method="POST" style="display:inline;">
                         <button type="submit" onclick="return confirm('Tem certeza que deseja remover?')">Remover</button>
                     </form>
                 </td>

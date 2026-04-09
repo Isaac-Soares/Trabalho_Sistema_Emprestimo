@@ -5,7 +5,7 @@
 
     <fieldset>
         <legend>Registrar Novo Empréstimo</legend>
-        <form action="/emprestimos/novo" method="POST">
+        <form action="{{ url_for('operacoes.emprestar') }}" method="POST">
             
             <label>Selecione o Usuário:</label>
             <select name="usuario_id" required>
@@ -48,7 +48,7 @@
                 <td>{{ emp.item.nome }}</td>
                 <td>{{ emp.data_emprestimo.strftime('%d/%m/%Y') }}</td>
                 <td>
-                    <form action="/emprestimos/devolver/{{ emp.id }}" method="POST" style="display:inline;">
+                    <form action="{{ url_for('operacoes.devolver', id=emp.id) }}" method="POST" style="display:inline;">
                         <button type="submit">Registrar Devolução</button>
                     </form>
                 </td>
